@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\SheetTaskController;
+use App\Http\Controllers\TimekeepingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +17,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home', ['title' => 'Home']);
+})->name('home');
+
+Route::get('register', [UserController::class, 'register'])->name('register');
+Route::post('register', [UserController::class, 'register_action'])->name('register.action');
+Route::get('login', [UserController::class, 'login'])->name('login');
+Route::post('login', [UserController::class, 'login_action'])->name('login.action');
+Route::get('logout', [UserController::class, 'logout'])->name('logout');
+
+
+Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
+Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');
+
+
+Route::get('/sheettask', [SheetTaskController::class, 'index'])->name('sheettask');
