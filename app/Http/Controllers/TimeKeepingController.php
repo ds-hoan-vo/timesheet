@@ -26,16 +26,42 @@ class TimekeepingController extends Controller
      */
     public function index()
     {
-        $data['title'] = 'Timekeeping';
-        return view('timekeeping', $data);
+        $user = Auth::user();
+        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        $check = [
+            'check_in' => $sheet?->check_in,
+            'check_out' => $sheet?->check_out,
+        ];
+
+        return view('timekeeping', compact('check'));
     }
 
     public function checkin()
     {
-        $sheet = new TimeSheet();
-        $sheet->user_id = Auth::user()->id;
-        $sheet->check_in = Carbon::now();
+
+        $user = Auth::user();
+        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        if (!$sheet) {
+            $sheet = new TimeSheet();
+            $sheet->user_id = $user->id;
+            $sheet->date = Carbon::now()->toDateString();
+        }
+        $sheet->check_in = Carbon::now()->toTimeString();
         $sheet->save();
         return redirect()->route('sheettask')->with('success', 'Time in success!');
+    }
+
+    public function checkout()
+    {
+        $user = Auth::user();
+        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        if (!$sheet) {
+            $sheet = new TimeSheet();
+            $sheet->user_id = $user->id;
+            $sheet->date = Carbon::now()->toDateString();
+        }
+        $sheet->check_out = Carbon::now()->toTimeString();
+        $sheet->save();
+        return redirect()->route('sheettask')->with('success', 'Time out success!');
     }
 }

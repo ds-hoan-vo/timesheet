@@ -11,8 +11,7 @@ class UserController extends Controller
 {
     public function register()
     {
-        $data['title'] = 'Register';
-        return view('user/register', $data);
+        return view('user/register');
     }
 
     public function register_action(Request $request)
@@ -37,8 +36,7 @@ class UserController extends Controller
 
     public function login()
     {
-        $data['title'] = 'Login';
-        return view('user/login', $data);
+        return view('user/login');
     }
 
     public function login_action(Request $request)
