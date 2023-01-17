@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('home', ['title' => 'Home']);
+    return view('home' );
 })->name('home');
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -29,6 +29,8 @@ Route::get('logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
 Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');
+Route::get('/timekeeping/checkout', [TimekeepingController::class, 'checkout'])->name('checkout');
 
 
 Route::get('/sheettask', [SheetTaskController::class, 'index'])->name('sheettask');
+Route::get('/sheettask/{id}', [SheetTaskController::class, 'create'])->name('sheettask-edit');

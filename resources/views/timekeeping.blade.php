@@ -1,5 +1,4 @@
 @extends('app')
-
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -14,12 +13,14 @@
                     </canvas>
 
                     <p>{{ now()->toDateTimeString() }}</p>
-
-
-                    <?php
-                    echo "<a href=\"{{ route('checkin') }}\" class=\"btn btn-primary\">Check In</a>";
-                    echo "<button type=\"button\" class =\"btn btn-success\">check Out</button>";
-                    ?>
+                    <div class="flex-row d-flex ">
+                        <form class="p-2" action="{{ route('checkin') }}" method="get">
+                            <button id="btn_checkin" type="submit" class="btn btn-primary"  {{ $check['check_in'] ? 'disabled' : ' ' }} >Check In</button>
+                        </form>
+                        <form class="p-2" action="{{ route('checkout') }}" method="get">
+                            <button id="btn_checkout" type="submit" class="btn btn-success"  {{ $check['check_out'] ? 'disabled' : ' ' }} >Check Out</button>
+                        </form>
+                    </div>
 
 
 
@@ -27,7 +28,9 @@
             </div>
         </div>
     </div>
+
     <script>
+        
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var radius = canvas.height / 2;

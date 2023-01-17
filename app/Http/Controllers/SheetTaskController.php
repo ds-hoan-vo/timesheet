@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\TimeSheet;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SheetTaskController extends Controller
 {
@@ -23,12 +24,12 @@ class SheetTaskController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index()
     {
-        $sheet = DB::table('timesheet');
-        $sheet = $sheet->whereMonth('created_at', '01')->get();
-        
-        $data['title'] = 'Sheettask';
-        return view('sheettask', compact($data, $sheet));
+        $month = '1-2023';
+        $user = Auth::user();
+        $sheet = Timesheet::where('user_id', $user->id)->whereMonth('date', $month)->get();
+        // $sheet = Arr::add();
+        return view('sheettask', compact('sheet', 'user','month'));
     }
 }
