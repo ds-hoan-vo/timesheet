@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->date('date')->nullable();
-            $table->dateTime('check_in')->nullable();
-            $table->dateTime('check_out')->nullable();
+            $table->time('check_in')->nullable();
+            $table->time('check_out')->nullable();
             $table->string('difficult')->nullable();
             $table->string('plan')->nullable();
             $table->string('status')->nullable();
