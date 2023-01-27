@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('home' );
+    return view('home');
 })->name('home');
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -25,7 +25,7 @@ Route::post('register', [UserController::class, 'register_action'])->name('regis
 Route::get('login', [UserController::class, 'login'])->name('login');
 Route::post('login', [UserController::class, 'login_action'])->name('login.action');
 Route::get('logout', [UserController::class, 'logout'])->name('logout');
-
+Route::get('profile', [UserController::class, 'profile'])->name('profile');
 
 Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
 Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');
@@ -33,4 +33,5 @@ Route::get('/timekeeping/checkout', [TimekeepingController::class, 'checkout'])-
 
 
 Route::get('/sheettask', [SheetTaskController::class, 'index'])->name('sheettask');
-Route::get('/sheettask/{id}', [SheetTaskController::class, 'create'])->name('sheettask-edit');
+
+// Route::patch('/sheettask/{timesheet}', [SheetTaskController::class, 'store'])->name('sheettask.store');
