@@ -7,6 +7,7 @@ use App\Models\TimeSheet;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SheetTaskController extends Controller
 {
@@ -34,6 +35,28 @@ class SheetTaskController extends Controller
         $sheet = Timesheet::where('user_id', $user->id)->whereMonth('date', $month)->get();
         return view('sheettask', compact('sheet', 'user', 'month'));
     }
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+       
+        $allRequest  = $request->all();
+        $sheet = TimeSheet::where('user_id', $user->id)->wheredate('date', $allRequest['date'])->first();
+        if (!$sheet) {
+            $sheet = new TimeSheet();
+            $sheet->user_id = $user->id;
+            $sheet->date = $allRequest['date'];
+            $sheet->check_in = $allRequest['checkin'];
+            $sheet->check_out = $allRequest['checkout'];
+            $sheet->difficult = $allRequest['difficult'];
+            $sheet->plan = $allRequest['plan'];
+            $sheet->status = $allRequest['status'];
+            $sheet->save();
+        } else
+            $sheet->fill($allRequest)->save();
+
+        return redirect()->route('sheettask');
+    }
+
     // public function show(Timesheet $timesheet)
     // {
     //     $sheet = Timesheet::find($timesheet->id);
