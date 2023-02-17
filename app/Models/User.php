@@ -19,4 +19,9 @@ class User extends Authenticatable
         'username',
         'password',
     ];
+
+    public function timesheets()
+    {
+        return $this->hasMany(TimeSheet::class, 'user_id', 'id');
+    }
 }

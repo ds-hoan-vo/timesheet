@@ -8,50 +8,50 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col-auto">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    <span>Department:</span>
+                                <div class="text-xs font-weight-bold text-info text-uppercase m-1">
+                                    <span>Department: </span>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="h6 font-weight-bold text-gray-800 mb-1">DSVN</div>
+                                <div class="h6 font-weight-bold text-gray-800 m-1">DSVN</div>
                             </div>
                             <div class="col-auto">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    <span>Employee Type:</span>
+                                <div class="text-xs font-weight-bold text-info text-uppercase m-1">
+                                    <span>Employee Type: </span>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="h6  font-weight-bold text-gray-800 mb-1">{{$user->role}}</div>
+                                <div class="h6  font-weight-bold text-gray-800 m-1">{{$user->role}}</div>
                             </div>
                             <div class="col-auto">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    <span>Employee Name:</span>
+                                <div class="text-xs font-weight-bold text-info text-uppercase m-1">
+                                    <span>Employee Name: </span>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="h6 font-weight-bold text-gray-800 mb-1">{{ $user->name }}</div>
+                                <div class="h6 font-weight-bold text-gray-800 m-1">{{ $user->name }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row mt-4">
+        <div class="row">
             <select class="col form-select ">
                 <option selected>January 2023 </option>
                 <option value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
             </select>
-            <button class="col btn btn-link" onclick=""> Prev Month</button>
-            <button class="col btn btn-link"> This Month </button>
-            <button class="col btn btn-link"> Next Month </button>
-
-
+            <div class="col m-2" id="displayDateTime">Month</div>
+            <button class="col btn btn-link" onclick="previousMonth();"> Prev Month</button>
+            <button class="col btn btn-link" onclick="thisMonth();"> This Month </button>
+            <button class="col btn btn-link" onclick="nextMonth();"> Next Month </button>
         </div>
-
+        <!-- @php($monthYear= '02-2023') -->
+        @php($monthYear = now()->format('m-Y'))
         <div class=" mt-4 table-responsive-lg">
-            <table class="table table-sm table-bordered text-center">
+            <table id="table-sheet" class="table table-sm table-bordered text-center">
                 <thead>
                     <tr>
                         <th scope="col"> </th>
@@ -65,25 +65,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for ($i = 1; $i <= now()->month($month)->daysInMonth; $i++)
-                        @if (date('D', strtotime($i . '-' . $month)) == 'Sun')
+                    @for ($i = 1; $i <= now()->month($monthYear)->daysInMonth; $i++)
+                        @if (date('D', strtotime($i . '-' . $monthYear)) == 'Sun')
                         <tr class="table-danger">
-                            @elseif (date('D', strtotime($i . '-' . $month)) == 'Sat')
+                            @elseif (date('D', strtotime($i . '-' . $monthYear)) == 'Sat')
                         <tr class="table-info">
                             @else
                         <tr>
                             @endif
-                            <td>{{ date('D', strtotime($i . '-' . $month)) }}</td>
-                            <td class="date">{{ date('Y-m-d', strtotime($i . '-' . $month)) }}</td>
-                            @if (count($sheet) == 0)
+                            <td>{{ date('D', strtotime($i . '-' . $monthYear)) }}</td>
+                            <td class="date">{{ date('Y-m-d', strtotime($i . '-' . $monthYear)) }}</td>
+                            @if (count($sheets) == 0)
                             <td class="check_in"></td>
                             <td class="check-out"></td>
                             <td class="status"></td>
                             <td class="difficult"></td>
                             <td class="plan"></td>
                             @endif
-                            @foreach ($sheet as $item)
-                            @if (date('Y-m-d', strtotime($i . '-' . $month)) == $item->date)
+                            @foreach ($sheets as $item)
+                            @if (date('Y-m-d', strtotime($i . '-' . $monthYear)) == $item->date)
                             <td class="check_in">{{ $item->check_in }}</td>
                             <td class="check-out">{{ $item->check_out }}</td>
                             <td class="status">{{ $item->status }}</td>
@@ -163,17 +163,17 @@
                         </div>
                         <div id="demo" class="collapse">
                             <div class="card shadow py-2 mb-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase px-4">
+                                <div class="text-xs font-weight-bold text-info text-uppercase px-4">
                                     <span>Task 1</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">Task1 naiyou</div>
                                         <div class="col-auto">
-                                        <button type="button" class="btn btn-secondary">edit</button>
-                                        <button type="button" class="btn btn-danger">remove</button>
+                                            <button type="button" class="btn btn-secondary">edit</button>
+                                            <button type="button" class="btn btn-danger">remove</button>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -189,6 +189,7 @@
     </div>
 
 </div>
+
 <script>
     $('#exampleModal').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
@@ -219,5 +220,48 @@
 
         });
     });
+</script>
+<script>
+    //get month
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var d = new Date();
+    var month = (months[d.getMonth()]) + ' ' + d.getFullYear();
+    document.getElementById("displayDateTime").innerHTML = month;
+
+    // next month js
+    function nextMonth() {
+        d.setMonth(convertMonth() + 1);
+        var month = (months[d.getMonth()]) + ' ' + d.getFullYear();
+        document.getElementById("displayDateTime").innerHTML = month;
+        $monthYear = getMonth();
+        console.log(' {!! $monthYear !!} ');
+    }
+    // previous month js
+    function previousMonth() {
+        d.setMonth(convertMonth() - 1);
+        var month = (months[d.getMonth()]) + ' ' + d.getFullYear();
+        document.getElementById("displayDateTime").innerHTML = month;
+    }
+    // this month js
+    function thisMonth() {
+        var d = new Date();
+        var month = (months[d.getMonth()]) + ' ' + d.getFullYear();
+        document.getElementById("displayDateTime").innerHTML = month;
+    }
+
+    function convertMonth() {
+        var month = document.getElementById("displayDateTime").innerHTML;
+        var month = month.split(' ');
+        var month = month[0];
+        var month = months.indexOf(month);
+        return month;
+    }
+
+    function getMonth() {
+        var month = document.getElementById("displayDateTime").innerHTML;
+        var month = month.split('-');
+        var month = month[0];
+        return month;
+    }
 </script>
 @endsection

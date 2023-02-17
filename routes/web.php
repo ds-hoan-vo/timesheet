@@ -33,5 +33,7 @@ Route::get('/timekeeping/checkout', [TimekeepingController::class, 'checkout'])-
 
 
 Route::get('/sheettask', [SheetTaskController::class, 'index'])->name('sheettask');
+// Route::get('/timesheet', [SheetTaskController::class, 'index'])->name('timesheet');
 // Route::get('/sheettask/create', [SheetTaskController::class, 'create'])->name('sheettask.create');
-Route::post('/sheettask/update', [SheetTaskController::class, 'update'])->name('sheettask.update');
+// Route::post('/sheettask/updatecreate', [SheetTaskController::class, 'updatecreate'])->name('sheettask.update');
+Route::post('/sheettask/updatecreate', [SheetTaskController::class, 'updatecreate'])->name('sheettask.update');

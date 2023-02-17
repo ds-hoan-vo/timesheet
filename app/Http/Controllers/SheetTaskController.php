@@ -16,7 +16,6 @@ class SheetTaskController extends Controller
      *
      * @return void
      */
-    public $month;
     public function __construct()
     {
         $this->middleware('auth');
@@ -27,21 +26,23 @@ class SheetTaskController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->month = Carbon::now()->format('m-Y');
         $user = Auth::user();
-        $month = $this->month;
-        $sheet = Timesheet::where('user_id', $user->id)->whereMonth('date', $month)->get();
-        return view('sheettask', compact('sheet', 'user', 'month'));
+        // $sheet = Timesheet::where('user_id', $user->id)->get();
+        
+        $sheets = $user->timesheets;
+        // dd($sheets);
+        return view('sheettask', compact('sheets', 'user'));
     }
-    public function update(Request $request)
+    //modal binding 
+    public function updatecreate(Request $request)
     {
         $user = Auth::user();
-       
         $allRequest  = $request->all();
-        $sheet = TimeSheet::where('user_id', $user->id)->wheredate('date', $allRequest['date'])->first();
-        if (!$sheet) {
+        // $sheet = TimeSheet::where('user_id', $user->id)->wheredate('date', $allRequest['date'])->first();
+        $sheets = $user->timesheets->where('date', $allRequest['date'])->first();
+        if (!$sheets) {
             $sheet = new TimeSheet();
             $sheet->user_id = $user->id;
             $sheet->date = $allRequest['date'];
@@ -52,32 +53,8 @@ class SheetTaskController extends Controller
             $sheet->status = $allRequest['status'];
             $sheet->save();
         } else
-            $sheet->fill($allRequest)->save();
-
+            $sheets->fill($allRequest)->save();
         return redirect()->route('sheettask');
     }
 
-    // public function show(Timesheet $timesheet)
-    // {
-    //     $sheet = Timesheet::find($timesheet->id);
-    //     $task = Task::where('sheet_id', $sheet->id)->get();
-    //     return view('sheettask', compact('sheet', 'task'));
-    // }
-    // public function store(Timesheet $timesheet, Request $request)
-    // {
-    //     $allRequest  = $request->all();
-    //     $timesheet = TimeSheet::find($timesheet->id);
-
-    //     // foreach ($timesheet as $item) {
-    //     //     Task::where('sheet_id', $item->id)->delete();
-    //     // }
-    //     // Task::create([
-    //     //     'content' => $allRequest['content'],
-    //     //     'status' => $allRequest['status'],
-    //     //     'sheet_id' => $timesheet->id,
-    //     // ]);
-
-    //     $timesheet->fill($allRequest)->save();
-    //     return redirect()->route('sheettask');
-    // }
 }
