@@ -62,4 +62,9 @@ class UserController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('user/profile', compact('user'));
+    }
 }
