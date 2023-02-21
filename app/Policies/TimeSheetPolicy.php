@@ -10,6 +10,13 @@ class TimeSheetPolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability): bool|null
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+        return null;
+    }
     /**
      * Determine whether the user can view any models.
      *
@@ -31,6 +38,7 @@ class TimeSheetPolicy
     public function view(User $user, TimeSheet $timeSheet)
     {
         //
+        return $user->id === $timeSheet->user_id;
     }
 
     /**
@@ -42,6 +50,7 @@ class TimeSheetPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -67,29 +76,6 @@ class TimeSheetPolicy
     public function delete(User $user, TimeSheet $timeSheet)
     {
         //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\TimeSheet  $timeSheet
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, TimeSheet $timeSheet)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\TimeSheet  $timeSheet
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, TimeSheet $timeSheet)
-    {
-        //
+        return $user->role === 'admin';
     }
 }

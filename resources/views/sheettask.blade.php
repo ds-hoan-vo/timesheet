@@ -48,7 +48,6 @@
             <button class="col btn btn-link" onclick="thisMonth();"> This Month </button>
             <button class="col btn btn-link" onclick="nextMonth();"> Next Month </button>
         </div>
-        <!-- @php($monthYear= '02-2023') -->
         @php($monthYear = now()->format('m-Y'))
         <div class=" mt-4 table-responsive-lg">
             <table id="table-sheet" class="table table-sm table-bordered text-center">
@@ -121,7 +120,7 @@
                     </button>
                 </div>
                 <div class="modal-body ">
-                    <form action="{{ route('sheettask.update') }}" method="post">
+                    <form action="{{ route('sheettask.create') }}" method="post">
                         @csrf
                         <div class="row" mb-2>
                             <div class="col">
