@@ -37,3 +37,4 @@ Route::get('/sheettask', [SheetTaskController::class, 'index'])->name('sheettask
 // Route::get('/sheettask/create', [SheetTaskController::class, 'create'])->name('sheettask.create');
 // Route::post('/sheettask/updatecreate', [SheetTaskController::class, 'updatecreate'])->name('sheettask.update');
 Route::post('/sheettask/updatecreate', [SheetTaskController::class, 'updatecreate'])->name('sheettask.update');
+// Route::post('/sheettask/update/{TimeSheet}', [SheetTaskController::class, 'update'])->name('sheettask.update');

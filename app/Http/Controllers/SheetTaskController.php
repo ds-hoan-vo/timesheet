@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Response;
 
 class SheetTaskController extends Controller
 {
@@ -26,19 +27,26 @@ class SheetTaskController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    // public function index(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     // $sheet = Timesheet::where('user_id', $user->id)->get();
+    //     $sheets = $user->timesheets;
+    //     // dd($sheets);
+    //     return view('sheettask', compact('sheets', 'user'));
+    // }
+
     public function index(Request $request)
     {
         $user = Auth::user();
-        // $sheet = Timesheet::where('user_id', $user->id)->get();
-        
         $sheets = $user->timesheets;
-        // dd($sheets);
-        return view('sheettask', compact('sheets', 'user'));
+        return view('timesheet', compact('user','sheets'));
     }
     //modal binding 
     public function updatecreate(Request $request)
     {
         $user = Auth::user();
+        $this->authorize('update', $user->timesheets);
         $allRequest  = $request->all();
         // $sheet = TimeSheet::where('user_id', $user->id)->wheredate('date', $allRequest['date'])->first();
         $sheets = $user->timesheets->where('date', $allRequest['date'])->first();
@@ -56,5 +64,4 @@ class SheetTaskController extends Controller
             $sheets->fill($allRequest)->save();
         return redirect()->route('sheettask');
     }
-
 }
