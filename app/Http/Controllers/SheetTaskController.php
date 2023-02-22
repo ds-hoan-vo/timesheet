@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TimeSheet;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,9 +40,7 @@ class SheetTaskController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-        if($user->cannot('create', TimeSheet::class)){
-            abort(403);
-        }
+        $this->authorize('createTimeSheet', TimeSheet::class);
         $sheet = new TimeSheet();
         $sheet->user_id = $user->id;
         $sheet->date = $request->date;
@@ -53,20 +52,24 @@ class SheetTaskController extends Controller
         $sheet->save();
         return redirect()->route('sheettask');
     }
+
     public function update(Request $request, TimeSheet $sheet)
     {
-        if ($request->user()->cannot('update', $sheet)) {
-            abort(403);
-        }
+        $this->authorize('updateTimeSheet', $sheet);
         $sheet->fill($request->all())->save();
-        return redirect()->route('sheettask');
+        return redirect()->route('sheettask')->with('msg', 'Update success');
     }
+
     public function delete(Request $request, TimeSheet $sheet)
     {
-        if ($request->user()->cannot('delete', $sheet)) {
-            abort(403);
-        }
+        $this->authorize('deleteTimeSheet', $sheet);
         $sheet->delete();
         return redirect()->route('sheettask');
+    }
+    public function updateProfile(Request $request, User $model)
+    {   
+        // $this->authorize('updateProfile', $model);
+        $model->fill($request->all())->save();
+        return redirect()->route('profile');
     }
 }

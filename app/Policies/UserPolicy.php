@@ -3,10 +3,9 @@
 namespace App\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\TimeSheet;
 use App\Models\User;
 
-class TimeSheetPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -23,25 +22,23 @@ class TimeSheetPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAnyTimeSheet(User $user)
+    public function viewAnyUser(User $user)
     {
         //
-        if($user->role === 'admin'){
-            return true;
-        }
+        return $user->role === 'admin';
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\TimeSheet  $timeSheet
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewTimeSheet(User $user, TimeSheet $timeSheet)
+    public function viewUser(User $user, User $model)
     {
         //
-        return $user->id === $timeSheet->user_id;
+        return $user->id === $model->id;
     }
 
     /**
@@ -50,35 +47,44 @@ class TimeSheetPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function createTimeSheet(User $user)
+    public function createUser(User $user)
     {
         //
-        return true;
+        
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\TimeSheet  $timeSheet
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function updateTimeSheet(User $user, TimeSheet $timeSheet)
+    public function updateUser(User $user, User $model)
     {
         //
-        return $user->id === $timeSheet->user_id;
+        return $user->id === $model->id;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\TimeSheet  $timeSheet
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function deleteTimeSheet(User $user, TimeSheet $timeSheet)
+    public function deleteUser(User $user, User $model)
     {
         //
-        return $user->role === 'admin';
+
+    }
+
+    public function viewProfile(User $user, User $model)
+    {
+        return $user->id === $model->id;
+    }
+    public function updateProfile(User $user, User $model)
+    {
+        return $user->id === $model->id;
     }
 }

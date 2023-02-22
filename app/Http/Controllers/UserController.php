@@ -2,69 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function register()
+    public function index(Request $request)
     {
-        return view('user/register');
+        $this->authorize('viewAnyUser', User::class);
+        $users = User::all();
+        return view('user.index', compact('users'));
+    }
+    public function create()
+    {
+        return view('user.create');
     }
 
-    public function register_action(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:users',
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-        ]);
-
-        $user = new User([
-            'name' => $request->name,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-        ]);
-        $user->save();
-
-        return redirect()->route('home')->with('success', 'Registration success. Please login!');
-    }
-
-
-    public function login()
-    {
-        return view('user/login');
-    }
-
-    public function login_action(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            $request->session()->regenerate();
-            return redirect()->intended('timekeeping');
-        }
-
-        return back()->withErrors([
-            'password' => 'Wrong username or password',
-        ]);
-    }
-
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
-    }
-    public function profile()
+    public function profile(Request $request)
     {
         $user = Auth::user();
-        return view('user/profile', compact('user'));
+        $this->authorize('viewProfile', $user);
+        return view('user.profile', compact('user'));
+    }
+    public function update(Request $request, User $model)
+    {   
+        // $this->authorize('updateProfile', $model);
+        $this->authorize('updateProfile', $model);
+        $model->fill($request->all())->save();
+        return redirect()->route('profile');
     }
 }
