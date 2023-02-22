@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TimeSheet;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Type\Time;
+use Response;
 
 class SheetTaskController extends Controller
 {
@@ -16,7 +19,6 @@ class SheetTaskController extends Controller
      *
      * @return void
      */
-    public $month;
     public function __construct()
     {
         $this->middleware('auth');
@@ -27,57 +29,47 @@ class SheetTaskController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
-    {
-        $this->month = Carbon::now()->format('m-Y');
-        $user = Auth::user();
-        $month = $this->month;
-        $sheet = Timesheet::where('user_id', $user->id)->whereMonth('date', $month)->get();
-        return view('sheettask', compact('sheet', 'user', 'month'));
-    }
-    public function update(Request $request)
-    {
-        $user = Auth::user();
-       
-        $allRequest  = $request->all();
-        $sheet = TimeSheet::where('user_id', $user->id)->wheredate('date', $allRequest['date'])->first();
-        if (!$sheet) {
-            $sheet = new TimeSheet();
-            $sheet->user_id = $user->id;
-            $sheet->date = $allRequest['date'];
-            $sheet->check_in = $allRequest['checkin'];
-            $sheet->check_out = $allRequest['checkout'];
-            $sheet->difficult = $allRequest['difficult'];
-            $sheet->plan = $allRequest['plan'];
-            $sheet->status = $allRequest['status'];
-            $sheet->save();
-        } else
-            $sheet->fill($allRequest)->save();
 
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $sheets = $user->timesheets;
+        return view('sheettask', compact('user', 'sheets'));
+    }
+    //modal binding 
+    public function create(Request $request)
+    {
+        $user = Auth::user();
+        $this->authorize('createTimeSheet', TimeSheet::class);
+        $sheet = new TimeSheet();
+        $sheet->user_id = $user->id;
+        $sheet->date = $request->date;
+        $sheet->check_in = $request->checkin;
+        $sheet->check_out = $request->checkout;
+        $sheet->difficult = $request->difficult;
+        $sheet->plan = $request->plan;
+        $sheet->status = $request->status;
+        $sheet->save();
         return redirect()->route('sheettask');
     }
 
-    // public function show(Timesheet $timesheet)
-    // {
-    //     $sheet = Timesheet::find($timesheet->id);
-    //     $task = Task::where('sheet_id', $sheet->id)->get();
-    //     return view('sheettask', compact('sheet', 'task'));
-    // }
-    // public function store(Timesheet $timesheet, Request $request)
-    // {
-    //     $allRequest  = $request->all();
-    //     $timesheet = TimeSheet::find($timesheet->id);
+    public function update(Request $request, TimeSheet $sheet)
+    {
+        $this->authorize('updateTimeSheet', $sheet);
+        $sheet->fill($request->all())->save();
+        return redirect()->route('sheettask')->with('msg', 'Update success');
+    }
 
-    //     // foreach ($timesheet as $item) {
-    //     //     Task::where('sheet_id', $item->id)->delete();
-    //     // }
-    //     // Task::create([
-    //     //     'content' => $allRequest['content'],
-    //     //     'status' => $allRequest['status'],
-    //     //     'sheet_id' => $timesheet->id,
-    //     // ]);
-
-    //     $timesheet->fill($allRequest)->save();
-    //     return redirect()->route('sheettask');
-    // }
+    public function delete(Request $request, TimeSheet $sheet)
+    {
+        $this->authorize('deleteTimeSheet', $sheet);
+        $sheet->delete();
+        return redirect()->route('sheettask');
+    }
+    public function updateProfile(Request $request, User $model)
+    {   
+        // $this->authorize('updateProfile', $model);
+        $model->fill($request->all())->save();
+        return redirect()->route('profile');
+    }
 }

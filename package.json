@@ -4,6 +4,14 @@
         "dev": "vite",
         "build": "vite build"
     },
+    "dependencies": {
+        "@fullcalendar/core": "^5.5.1",
+        "@fullcalendar/daygrid": "^5.5.0",
+        "@fullcalendar/interaction": "^5.5.0",
+        "@fullcalendar/list": "^5.5.0",
+        "@fullcalendar/timegrid": "^5.5.1",
+        "fullcalendar": "^6.1.4"
+    },
     "devDependencies": {
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.7.2",
