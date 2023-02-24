@@ -241,39 +241,36 @@
                         <input type="text" class="form-control mb-2" placeholder="plan" name="plan" value="{{$item->plan}}">
                         <span>Status</span>
                         <input type="text" class="form-control mb-2" placeholder="status" name="status" value="{{$item->status}}">
-                        <div class="row mb-4">
-                            <div class="col">
-                                <button type="button" class="btn btn-light" data-toggle="collapse" data-target="#edit-task-collapse">Task</button>
-                            </div>
-                            <input type="text" class="form-control mb-2 mr-2 col" placeholder="Task Content">
-                            <input type="text" class="form-control mb-2 mr-2 col" placeholder="Task Status">
+
+                        <div class="row mb-2">
                             <div class="col-auto">
-                                <button type="button" class="btn btn-primary" onclick="addNewTask();">+New</button>
+                                <button type="button" class="btn btn-light">Task</button>
+                            </div>
+                            <input id="task-content{{$item->id}}" type="text" class="form-control mb-2 mr-2 col" placeholder="Task Content">
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-primary" onclick="addNewTask( {!! $item->id !!} );">+New</button>
                             </div>
                         </div>
 
-                        <div id="edit-task-collapse" class="collapse">
-                            @foreach ($item->tasks as $task)
-                            <div class="card shadow py-2 mb-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase px-2">
-                                    <span>Task {{ $task->content}}</span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            {{ $task->status }}
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <button type="button" class="btn btn-secondary">edit</button>
-                                            <button type="button" class="btn btn-danger">remove</button>
-                                        </div>
-
+                        <div id="task-list{{$item->id}}">
+                        </div>
+                        @foreach ($item->tasks as $task)
+                        <div class="card shadow mb-2">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="text" class="form-control-plaintext border-0" placeholder="phone" name="phone" value="{{ $task->content }}">
                                     </div>
+
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-danger">remove</button>
+                                    </div>
+
                                 </div>
                             </div>
-                            @endforeach
                         </div>
+                        @endforeach
+
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
@@ -284,31 +281,37 @@
         </div>
     </div>
     @endforeach
-
-
-
-
 </div>
 <script>
-    function addNewTask() {
-        document.querySelector('#edit-task-collapse').innerHTML += `
-        <div class="card shadow py-2 mb-2">
-            <div class="text-xs font-weight-bold text-info text-uppercase px-2">
-                <span>Task 1</span>
-            </div>
+    function addNewTask(id) {
+        var taskContent = document.getElementById('task-content' + id).value;
+        var taskList = document.getElementById('task-list' + id);
+        if (taskContent == '') {
+            alert('Please enter task content');
+            return;
+        } else {
+            var task = document.createElement('div');
+            task.className = 'card shadow mb-2';
+            task.innerHTML = `
             <div class="card-body">
                 <div class="row">
-                    <div class="col">Task1 naiyou</div>
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-secondary">edit</button>
-                        <button type="button" class="btn btn-danger">remove</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `
+                    <div class="col">
+                    <input type="text" class="form-control-plaintext border-0" placeholder="phone" name="phone" value="` +
+                        taskContent + `">
+                    </div> 
+                    <div class = "col-auto" >
+                        <button type = "button" class = "btn btn-danger" > remove </button>
+                    </div> 
+                </div> 
+            </div>`;
+            taskList.appendChild(task);
+            document.getElementById('task-content' + id).value = '';
+        }
     }
 </script>
+
+
+
 <script>
     $('#exampleModal').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
