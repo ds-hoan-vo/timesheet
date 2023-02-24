@@ -12,6 +12,7 @@ class Task extends Model
     protected $primaryKey = 'id';
     
     protected $fillable = [
+        'sheet_id',
         'content',
         'status',
     ];

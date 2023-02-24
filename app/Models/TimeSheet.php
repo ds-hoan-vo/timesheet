@@ -26,4 +26,9 @@ class TimeSheet extends Model
         'checkin',
         'checkout',
     ];
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'sheet_id', 'id');
+    }
+
 }

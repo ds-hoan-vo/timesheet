@@ -34,8 +34,14 @@ class SheetTaskController extends Controller
     {
         $user = Auth::user();
         $sheets = $user->timesheets;
+        // make sheet json has task
+        foreach ($sheets as $sheet) {
+            $tasks = $sheet->tasks;
+            $sheet->tasks = $tasks;
+        }
         return view('sheettask', compact('user', 'sheets'));
     }
+
     //modal binding 
     public function create(Request $request)
     {
@@ -67,7 +73,7 @@ class SheetTaskController extends Controller
         return redirect()->route('sheettask');
     }
     public function updateProfile(Request $request, User $model)
-    {   
+    {
         // $this->authorize('updateProfile', $model);
         $model->fill($request->all())->save();
         return redirect()->route('profile');
