@@ -34,7 +34,7 @@
                                     <span class="text-muted">{{$user->phone}}</span>
                                 </td>
                                 <td>
-                                    <span class="text-muted">@php {{ $user->created_at}}</span><br>
+                                    <span class="text-muted">{{ $user->created_at}}</span><br>
                                     <span class="text-muted">10: 55 AM</span>
                                 </td>
                                 <td>

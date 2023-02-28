@@ -149,10 +149,10 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col">
-                                <input type="text" class="form-control" name="checkin" id="c-checkin">
+                                <input type="text" class="form-control" name="check_in" id="c-checkin">
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" name="checkout" id="c-checkout">
+                                <input type="text" class="form-control" name="check_out" id="c-checkout">
                             </div>
                         </div>
                         <span>Difficultie</span>
@@ -229,10 +229,10 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col">
-                                <input type="text" class="form-control" name="checkin" value="{{$item->check_in}}">
+                                <input type="text" class="form-control" name="check_in" value="{{$item->check_in}}">
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" name="checkout" value="{{$item->check_out}}">
+                                <input type="text" class="form-control" name="check_out" value="{{$item->check_out}}">
                             </div>
                         </div>
                         <span>Difficultie</span>
@@ -253,24 +253,25 @@
                         </div>
 
                         <div id="task-list{{$item->id}}">
-                        </div>
-                        @foreach ($item->tasks as $task)
-                        <div class="card shadow mb-2">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="text" class="form-control-plaintext border-0" placeholder="phone" name="phone" value="{{ $task->content }}">
-                                    </div>
+                            @foreach ($item->tasks as $task)
+                            <div class="card shadow mb-2">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control-plaintext border-0" placeholder="content" name="tasks[{{ $loop->index }}][content]" value="{{ $task->content }}">
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control-plaintext border-0" placeholder="status" name="tasks[{{ $loop->index }}][status]" value="{{ $task->status }}">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn btn-danger delete">remove</button>
+                                        </div>
 
-                                    <div class="col-auto">
-                                        <button type="button" class="btn btn-danger">remove</button>
                                     </div>
-
                                 </div>
                             </div>
+                            @endforeach
                         </div>
-                        @endforeach
-
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
@@ -284,8 +285,11 @@
 </div>
 <script>
     function addNewTask(id) {
+
         var taskContent = document.getElementById('task-content' + id).value;
         var taskList = document.getElementById('task-list' + id);
+        var taskCount = taskList.childElementCount;
+        console.log(taskCount);
         if (taskContent == '') {
             alert('Please enter task content');
             return;
@@ -296,11 +300,15 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                    <input type="text" class="form-control-plaintext border-0" placeholder="phone" name="phone" value="` +
-                        taskContent + `">
+                    <input type="text" class="form-control-plaintext border-0" name="tasks[`+taskCount+`][content]" value="` +
+                taskContent + `">
                     </div> 
+                    <div class="col">
+                    <input type="text" class="form-control-plaintext border-0" name="tasks[`+taskCount+`][status]" value="` +
+                `pending ` + `">
+                    </div>
                     <div class = "col-auto" >
-                        <button type = "button" class = "btn btn-danger" > remove </button>
+                    <button type="button" class="btn btn-danger delete">remove</button>
                     </div> 
                 </div> 
             </div>`;
@@ -308,21 +316,20 @@
             document.getElementById('task-content' + id).value = '';
         }
     }
+
+    //remove task in modal 
+    $(document).on('click', '.delete', function() {
+        $(this).closest('.card').remove();
+    });
+
+    //reload page when close modal
+    $(document).ready(function() {
+        $('.modal').on('hidden.bs.modal', function() {
+            location.reload();
+        });
+    });
 </script>
 
-
-
-<script>
-    $('#exampleModal').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var recipient = button.data('whatever') // Extract info from data-* attributes
-        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-        var modal = $(this)
-        modal.find('.modal-title').text('New message to ' + recipient)
-        modal.find('.modal-body input').val(recipient)
-    })
-</script>
 
 <script>
     $(document).ready(function() {

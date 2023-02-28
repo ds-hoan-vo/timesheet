@@ -40,7 +40,7 @@ Route::delete('/sheettask/{sheet}', [SheetTaskController::class, 'delete'])->nam
 
 
 Route::get('profile', [UserController::class, 'profile'])->name('profile');
-Route::put('profile/{model}', [SheetTaskController::class, 'updateProfile'])->name('profile.update');
+Route::put('profile/{model}', [UserController::class, 'update'])->name('profile.update');
 
 Route::get('/user', [UserController::class, 'index'])->name('user');
 Route::post('/user', [UserController::class, 'create'])->name('user.create');
