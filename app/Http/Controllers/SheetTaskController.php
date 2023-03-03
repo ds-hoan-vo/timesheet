@@ -48,22 +48,17 @@ class SheetTaskController extends Controller
     {
         $user = Auth::user();
         $this->authorize('createTimeSheet', TimeSheet::class);
-        $sheet = new TimeSheet();
-        $sheet->fill($request->all())->save();
+        $user->timesheets()->create($request->all());
         return redirect()->route('sheettask');
     }
 
     public function update(Request $request, TimeSheet $sheet)
     {
         $this->authorize('updateTimeSheet', $sheet);
-        Task::where('sheet_id', $sheet->id)->delete();
+        $sheet->tasks->each->delete();
         if ($request->tasks != null) {
             foreach ($request->tasks as $item) {
-                $task = new Task();
-                $task->sheet_id = $sheet->id;
-                $task->content = Arr::get($item, 'content');
-                $task->status = Arr::get($item, 'status');
-                $task->save();
+                $sheet->tasks()->create($item);
             }
         }
         $sheet->fill($request->all())->save();
@@ -74,6 +69,6 @@ class SheetTaskController extends Controller
     {
         $this->authorize('deleteTimeSheet', $sheet);
         $sheet->delete();
-        return redirect()->route('sheettask');
+        return redirect()->route('sheettask')->with('msg', 'Delete success');
     }
 }

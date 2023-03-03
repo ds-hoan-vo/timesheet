@@ -28,6 +28,10 @@ class TimeSheet extends Model
         'check_in',
         'check_out',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     public function tasks()
     {
         return $this->hasMany(Task::class, 'sheet_id', 'id');

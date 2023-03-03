@@ -27,7 +27,8 @@ class TimekeepingController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        $sheet = $user->timesheets->where('date', Carbon::now()->toDateString())->first();
+        // $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
         $check = [
             'check_in' => $sheet?->check_in,
             'check_out' => $sheet?->check_out,
@@ -40,10 +41,10 @@ class TimekeepingController extends Controller
     {
 
         $user = Auth::user();
-        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        // $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        $sheet = $user->timesheets->where('date', Carbon::now()->toDateString())->first();
         if (!$sheet) {
-            $sheet = new TimeSheet();
-            $sheet->user_id = $user->id;
+            $sheet = $user->timesheets()->create();
             $sheet->date = Carbon::now()->toDateString();
         }
         $sheet->check_in = Carbon::now()->toTimeString();
@@ -54,10 +55,10 @@ class TimekeepingController extends Controller
     public function checkout()
     {
         $user = Auth::user();
-        $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        // $sheet = Timesheet::where('user_id', $user->id)->where('date', Carbon::now()->toDateString())->first();
+        $sheet = $user->timesheets->where('date', Carbon::now()->toDateString())->first();
         if (!$sheet) {
-            $sheet = new TimeSheet();
-            $sheet->user_id = $user->id;
+            $sheet = $user->timesheets()->create();
             $sheet->date = Carbon::now()->toDateString();
         }
         $sheet->check_out = Carbon::now()->toTimeString();

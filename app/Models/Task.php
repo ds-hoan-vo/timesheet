@@ -16,4 +16,8 @@ class Task extends Model
         'content',
         'status',
     ];
+    public function sheet()
+    {
+        return $this->belongsTo(TimeSheet::class, 'sheet_id', 'id');
+    }
 }
