@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SheetTaskController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TimekeepingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -40,9 +41,11 @@ Route::delete('/sheettask/{sheet}', [SheetTaskController::class, 'delete'])->nam
 
 
 Route::get('profile', [UserController::class, 'profile'])->name('profile');
-Route::put('profile/{model}', [UserController::class, 'update'])->name('profile.update');
+Route::put('profile/{model}', [UserController::class, 'updateProfile'])->name('profile.update');
 
-Route::get('/user', [UserController::class, 'index'])->name('user');
+Route::get('/user', [UserController::class, 'index'])->name('user.index');
 Route::post('/user', [UserController::class, 'create'])->name('user.create');
-// Route::put('/user/{user?}', [UserController::class, 'update'])->name('user.update');
-Route::delete('/user/{user}', [UserController::class, 'delete'])->name('user.delete');
+Route::put('/user/{model}', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/{model}', [UserController::class, 'delete'])->name('user.delete');
+
+Route::get('/team', [TeamController::class, 'index'])->name('team.index');

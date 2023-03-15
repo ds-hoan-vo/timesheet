@@ -48,7 +48,9 @@ class SheetTaskController extends Controller
     {
         $user = Auth::user();
         $this->authorize('createTimeSheet', TimeSheet::class);
-        $user->timesheets()->create($request->all());
+        //create sheet using relationship user
+        $sheet = $user->timesheets()->create($request->all());
+        
         return redirect()->route('sheettask');
     }
 

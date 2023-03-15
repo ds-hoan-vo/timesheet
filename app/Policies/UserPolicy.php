@@ -8,10 +8,10 @@ use App\Models\User;
 class UserPolicy
 {
     use HandlesAuthorization;
-
+  
     public function before($user, $ability): bool|null
     {
-        if ($user->role === 'admin') {
+        if ($user->role === User::ADMIN ) {
             return true;
         }
         return null;
@@ -25,7 +25,7 @@ class UserPolicy
     public function viewAnyUser(User $user)
     {
         //
-        return $user->role === 'admin';
+        return $user->role === User::ADMIN;
     }
 
     /**
@@ -76,6 +76,7 @@ class UserPolicy
     public function deleteUser(User $user, User $model)
     {
         //
+        return $user->id === $model->id;
 
     }
 

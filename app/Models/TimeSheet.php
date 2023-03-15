@@ -18,6 +18,7 @@ class TimeSheet extends Model
      */
     protected $fillable = [
         'user_id',
+        'date',
         'check_in',
         'check_out',
         'difficult',
