@@ -35,12 +35,15 @@
                                             @endforeach
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-outline-info ml-2 delete"><i
-                                                    class="fa fa-trash"></i> </button>
-                                            <button type="button" class="btn btn-outline-info ml-2"><i
-                                                    class="fa fa-edit"></i> </button>
-                                            <button type="button" class="btn btn-outline-info ml-2"><i
-                                                    class="fa fa-upload"></i> </button>
+                                            @can('deleteTeam', $team)
+                                                <button type="button" class="btn btn-outline-info ml-2 delete"><i
+                                                        class="fa fa-trash"></i> </button>
+                                            @endcan
+
+                                            @can('updateTeam', $team)
+                                                <button type="button" class="btn btn-outline-info ml-2"><i
+                                                        class="fa fa-edit"></i> </button>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach
@@ -72,5 +75,4 @@
             }
         });
     </script>
-    
 @endsection

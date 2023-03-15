@@ -87,7 +87,7 @@
                                     <a class="nav-link" href="{{ route('user.index') }}">{{ __('CRUD User') }}</a>
                                 </li>
                             @endcan
-                            @can('viewAnyUser', App\Models\User::class)
+                            @can('viewAnyTeam', App\Models\Team::class)
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('team.index') }}">{{ __('CRUD Teams') }}</a>
                                 </li>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use App\Http\Controllers\Controller;
+use Auth;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class TeamController extends Controller
 {
@@ -13,10 +15,18 @@ class TeamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
 
-        $teams = Team::all();
+        $this->authorize('viewAnyTeam', Team::class);
+
+        $user = Auth::user();
+        if ($user->role === User::ADMIN) {
+            $teams = Team::all();
+        } else {
+            $teams = $user->teams;
+        }
         foreach ($teams as $team) {
             $team->users = $team->hasUsers;
         }

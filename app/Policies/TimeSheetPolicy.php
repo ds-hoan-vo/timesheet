@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Team;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\TimeSheet;
 use App\Models\User;
@@ -12,7 +13,7 @@ class TimeSheetPolicy
 
     public function before($user, $ability): bool|null
     {
-        if ($user->role === 'admin') {
+        if ($user->role === User::ADMIN) {
             return true;
         }
         return null;
@@ -26,9 +27,11 @@ class TimeSheetPolicy
     public function viewAnyTimeSheet(User $user)
     {
         //
-        if($user->role === 'admin'){
+        $teams = $user->teams()->where('role', Team::LEADER)->get();
+        if ($teams->count() > 0) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -41,7 +44,19 @@ class TimeSheetPolicy
     public function viewTimeSheet(User $user, TimeSheet $timeSheet)
     {
         //
-        return $user->id === $timeSheet->user_id;
+        $owner = $timeSheet->user;
+        $teams = $owner->teams;
+        foreach ($teams as $team) {
+            $teamUsers = $team->hasUsers;
+            foreach ($teamUsers as $teamUser) {
+                if ($teamUser->pivot->role === Team::LEADER && $teamUser->pivot->user_id === $user->id) {
+                    return true;
+                }
+            }
+        }
+        if ($user->id === $owner->id)
+            return true;
+        return false;
     }
 
     /**
@@ -53,7 +68,7 @@ class TimeSheetPolicy
     public function createTimeSheet(User $user)
     {
         //
-        return true;
+        return $user->role === 'user';
     }
 
     /**
@@ -66,7 +81,20 @@ class TimeSheetPolicy
     public function updateTimeSheet(User $user, TimeSheet $timeSheet)
     {
         //
-        return $user->id === $timeSheet->user_id;
+
+        $owner = $timeSheet->user;
+        $teams = $owner->teams;
+        foreach ($teams as $team) {
+            $teamUsers = $team->hasUsers;
+            foreach ($teamUsers as $teamUser) {
+                if ($teamUser->pivot->role === Team::LEADER && $teamUser->pivot->user_id === $user->id) {
+                    return true;
+                }
+            }
+        }
+        if ($user->id === $owner->id)
+            return true;
+        return false;
     }
 
     /**

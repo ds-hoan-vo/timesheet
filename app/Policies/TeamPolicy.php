@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Team;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\User;
 
@@ -28,27 +29,51 @@ class TeamPolicy
     public function viewAnyTeam(User $user)
     {
         //
-        return $user->role === 'admin';
+        $teams = $user->teams;
+        if($teams->count() > 0){
+            return true;
+        }
+        return false;
     }
-    public function view(User $user, User $model)
+    public function viewTeam(User $user, Team $model)
     {
         //
-        return $user->id === $model->id;
+        $teamUsers = $model->hasUsers;
+        foreach ($teamUsers as $teamUser) {
+            if ($teamUser->pivot->role === Team::LEADER && $teamUser->pivot->user_id === $user->id) {
+                return true;
+            }
+        }
+        return false;
+
     }
-    public function create(User $user)
+
+    public function createTeam(User $user)
     {
         //
-        return $user->role === 'admin';
+        return $user->role === User::ADMIN;
     }
-    public function update(User $user, User $model)
+    public function updateTeam(User $user, Team $model)
     {
         //
-        return $user->id === $model->id;
+        $teamUsers = $model->hasUsers;
+        foreach ($teamUsers as $teamUser) {
+            if ($teamUser->pivot->role === Team::LEADER && $teamUser->pivot->user_id === $user->id) {
+                return true;
+            }
+        }
+        return false;
     }
-    public function delete(User $user, User $model)
+    public function deleteTeam(User $user, Team $model)
     {
         //
-        return $user->id === $model->id;
+        $teamUsers = $model->hasUsers;
+        foreach ($teamUsers as $teamUser) {
+            if ($teamUser->pivot->role === Team::LEADER && $teamUser->pivot->user_id === $user->id) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
