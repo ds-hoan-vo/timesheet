@@ -28,6 +28,13 @@ Route::post('register', [AuthController::class, 'register_action'])->name('regis
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'login_action'])->name('login.action');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('forgot-password', [AuthController::class, 'forgot_password'])->name('forgot.password');
+Route::post('forgot-password', [AuthController::class, 'forgot_password_action'])->name('forgot.password.action');
+Route::get('confirm-otp', [AuthController::class, 'confirm_otp'])->name('confirm.otp');
+Route::post('confirm-otp', [AuthController::class, 'confirm_otp_action'])->name('confirm.otp.action');
+Route::get('reset-password', [AuthController::class, 'reset_password'])->name('reset.password');
+Route::post('reset-password', [AuthController::class, 'reset_password_action'])->name('reset.password.action');
+
 
 Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
 Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');

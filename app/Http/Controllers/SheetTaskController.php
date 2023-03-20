@@ -2,16 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use App\Models\TimeSheet;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Type\Time;
-use Response;
 
 class SheetTaskController extends Controller
 {
@@ -48,9 +41,8 @@ class SheetTaskController extends Controller
     {
         $user = Auth::user();
         $this->authorize('createTimeSheet', TimeSheet::class);
-        //create sheet using relationship user
         $sheet = $user->timesheets()->create($request->all());
-        
+
         return redirect()->route('sheettask');
     }
 
