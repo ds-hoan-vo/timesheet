@@ -6,10 +6,13 @@ use App\Mail\ForgotPassword;
 use App\Models\EmailOtp;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use Illuminate\Console\View\Components\Confirm;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Mail;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -82,57 +85,49 @@ class AuthController extends Controller
         $user = User::where('username', $request->username)->first();
         if ($user) {
             $otp = rand(100000, 999999);
+            $token = Password::getRepository()->createNewToken();
+            EmailOtp::where('email', $user->username)->delete();
             $email_otp = new EmailOtp([
                 'email' => $user->username,
                 'otp' => $otp,
+                'token' => $token,
                 'expired_at' => Carbon::now()->addSecond(60),
+
             ]);
             $email_otp->save();
-
-            Mail::to($user->email)->send(new ForgotPassword($email_otp));
-            $request->session()->put('email', $email_otp->email);
-            return redirect()->route('confirm.otp');
-        } else {
-            return back()->withErrors([
-                'password' => 'Wrong username',
-            ]);
+            Mail::to($user->username)->send(new ForgotPassword($email_otp, $token));
+            return redirect()->route('forgot.password')->with('success', 'Please check your email to reset password');
         }
     }
-    public function confirm_otp(Request $request)
+    public function confirm_otp(Request $request, string $token)
     {
-        return view('auth/confirm_otp')->with('email', $request->session()->get('email'));
+        return view('auth/confirm_otp')->with('token', $token);
     }
 
     public function confirm_otp_action(Request $request)
-    {   
-       
+    {
         $request->validate([
             'otp' => 'required',
         ]);
-        $email = $request->session()->get('email');
-        $email_otp = EmailOtp::where('email', $email)->where('email', $email)->where('otp', $request->otp)->first();
-        if ($email_otp) {
-            if (Carbon::now()->lessThan($email_otp->expired_at)) {
-                $request->session()->put('email', $email);
-                $email_otp->delete();
-                return redirect()->route('reset.password');
-            } else {
-                $request->session()->forget('email');
-                return back()->withErrors([
-                    'otp' => 'OTP expired',
-                ]);
+        $emailOtp = EmailOtp::where('token', $request->token)->first();
+        if ($emailOtp) {
+            $otp = $emailOtp->otp;
+            if ($otp == $request->otp && $emailOtp->expired_at > Carbon::now()) {
+                return redirect()->route('reset.password', $request->token);
+            } elseif ($otp != $request->otp) {
+                return redirect()->route('confirm.otp', $request->token)->with('error', 'Wrong OTP');
+            } else if ($emailOtp->expired_at < Carbon::now()) {
+                return redirect()->route('confirm.otp', $request->token)->with('error', 'OTP expired');
             }
         } else {
-            $request->session()->forget('email');
-            return back()->withErrors([
-                'otp' => 'Wrong OTP',
-            ]);
+            return redirect()->route('confirm.otp', $request->token)->with('error', 'Link expired');
         }
     }
-
-    public function reset_password(Request $request)
+    public function reset_password(Request $request, string $token)
     {
-        return view('auth/reset_password')->with('email', $request->session()->get('email'));
+        $email = EmailOtp::where('token', $token)->first();
+        $email = $email->email;
+        return view('auth/reset_password')->with('token', $token)->with('email', $email);
     }
 
     public function reset_password_action(Request $request)
@@ -141,8 +136,8 @@ class AuthController extends Controller
             'password' => 'required',
             'password_confirm' => 'required|same:password',
         ]);
-        $email = $request->session()->get('email');
-        $user = User::where('username', $email)->first();
+        $emailOtp = EmailOtp::where('token', $request->token)->get()->first();
+        $user = User::where('username', $emailOtp->email)->get()->first();
         $user->password = Hash::make($request->password);
         $user->save();
         return redirect()->route('login')->with('success', 'Reset password success. Please login!');

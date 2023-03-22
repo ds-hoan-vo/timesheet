@@ -22,10 +22,12 @@ class ForgotPassword extends Mailable
     public $email;
     public $otp;
     public $expired_at;
-    public function __construct(EmailOtp $email_otp)
+    public $token;
+    public function __construct(EmailOtp $email_otp,  $token)
     {
         $this->email = $email_otp->email;
         $this->otp = $email_otp->otp;
+        $this->token = $token;
         $this->expired_at = $email_otp->expired_at;
     }
 
@@ -37,7 +39,7 @@ class ForgotPassword extends Mailable
     public function envelope()
     {
         return new Envelope(
-        subject: 'Forgot Password',
+            subject: 'Forgot Password',
         );
     }
 
@@ -49,7 +51,7 @@ class ForgotPassword extends Mailable
     public function content()
     {
         return new Content(
-        markdown: 'emails.forgotpasswords',
+            markdown: 'emails.forgotpasswords',
         );
     }
 

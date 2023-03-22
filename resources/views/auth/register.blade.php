@@ -8,7 +8,7 @@
                     <div class="col-md-6">
                         <h2>Register</h2>
                         @if($errors->any())
-                        @foreach($errors->all() as $err)
+                        @foreach($errors->all() as $err) 
                         <p class="alert alert-danger">{{ $err }}</p>
                         @endforeach
                         @endif

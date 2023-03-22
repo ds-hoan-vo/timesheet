@@ -1,13 +1,16 @@
 @extends('app')
 @section('content')
-
     <div class="container">
         <div class="row justify-content-center">
             <div class="container mt-4">
                 <div class="container table-wrapper">
-
                     <div class="row">
                         <div class="col-md-6">
+                            @if (session('success'))
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
                             <h2>Reset Password</h2>
                             <form action="{{ route('forgot.password.action') }}" method="POST">
                                 @csrf
@@ -21,6 +24,7 @@
                                     <a class="btn btn-danger" href="{{ route('home') }}">Back</a>
                                 </div>
                             </form>
+                            
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,6 @@
                         <div class="position-relative">
                             <div class="card p-2 text-center">
                                 <h6>Please enter the one time password <br> to verify your account</h6>
-                                <div> <span>A code has been sent to</span> <small>{{ $email }}</small> </div>
                                 <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
                                     <input class="m-2 text-center form-control rounded" type="text" id="first"
                                         maxlength="1" />
@@ -24,14 +23,24 @@
                                     <input class="m-2 text-center form-control rounded" type="text" id="sixth"
                                         maxlength="1" />
                                 </div>
-                                <div class="mt-4"> <button id="validate"
-                                        class="btn btn-danger px-4 validate">Validate</button>
-                                </div>
+                                <form action="{{ route('confirm.otp.action') }}" method="POST">
+                                    @csrf
+                                    <input id="otpnumber" class="form-control" type="text" name="otp" hidden />
 
+                                    <input class="form-control" type="text" name="token" hidden
+                                        value="{{ $token }}" />
+                                    <div class="mt-4"> <button id="validate"
+                                            class="btn btn-danger px-4 validate">Validate</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-
+                    @if (session('error'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -41,6 +50,7 @@
         document.addEventListener("DOMContentLoaded", function(event) {
 
             function OTPInput() {
+
                 const inputs = document.querySelectorAll('#otp > *[id]');
                 for (let i = 0; i < inputs.length; i++) {
                     inputs[i].addEventListener('keydown', function(event) {
@@ -67,17 +77,16 @@
         });
     </script>
     <script>
-        $(document).on('click', '.validate', function() {
-            var otp = $('#first').val() + $('#second').val() + $('#third').val() + $('#fourth').val() + $('#fifth')
-                .val() + $('#sixth').val();
-                console.log(otp);
-            $.ajax({
-                url: '/confirm-otp',
-                type: 'POST',
-                data: {
-                    otp: otp,
-                    _token: '{{ csrf_token() }}'
-                },
+        document.addEventListener("DOMContentLoaded", function(event) {
+            document.getElementById("validate").addEventListener("click", function() {
+                var first = document.getElementById("first").value;
+                var second = document.getElementById("second").value;
+                var third = document.getElementById("third").value;
+                var fourth = document.getElementById("fourth").value;
+                var fifth = document.getElementById("fifth").value;
+                var sixth = document.getElementById("sixth").value;
+                var otp = first + second + third + fourth + fifth + sixth;
+                document.getElementById("otpnumber").value = otp;
             });
         });
     </script>
