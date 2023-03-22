@@ -18,12 +18,24 @@ class TimeSheet extends Model
      */
     protected $fillable = [
         'user_id',
+        'date',
+        'check_in',
+        'check_out',
         'difficult',
         'plan',
         'status',
     ];
-    protected $dates = [
-        'checkin',
-        'checkout',
+    protected $time = [
+        'check_in',
+        'check_out',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'sheet_id', 'id');
+    }
+
 }

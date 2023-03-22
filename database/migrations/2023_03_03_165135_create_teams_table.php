@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        
+        Schema::create('teams', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('sheet_id')->unsigned();
-            $table->foreign('sheet_id')->references('id')->on('timesheet')->onDelete('cascade');
-            $table->string('content');
-            $table->string('status');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('teams');
     }
 };

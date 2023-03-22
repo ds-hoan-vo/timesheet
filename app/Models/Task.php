@@ -12,7 +12,12 @@ class Task extends Model
     protected $primaryKey = 'id';
     
     protected $fillable = [
+        'sheet_id',
         'content',
         'status',
     ];
+    public function sheet()
+    {
+        return $this->belongsTo(TimeSheet::class, 'sheet_id', 'id');
+    }
 }

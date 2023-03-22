@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('sheet_id')->unsigned();
-            $table->foreign('sheet_id')->references('id')->on('timesheet')->onDelete('cascade');
-            $table->string('content');
-            $table->string('status');
+        Schema::create('email_otps', function (Blueprint $table) {
+            $table->id();
+            $table->string('email');
+            $table->string('otp');
+            $table->string('token');
+            $table->dateTime('expired_at')->default(NULL);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('email_otps');
     }
 };

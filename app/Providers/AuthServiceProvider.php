@@ -18,6 +18,8 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         // 'App\Models\TimeSheet' => 'App\Policies\TimeSheetPolicy',
         TimeSheet::class => TimeSheetPolicy::class,
+        Team::class => TeamPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**

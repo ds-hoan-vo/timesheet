@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SheetTaskController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TimekeepingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -27,6 +28,12 @@ Route::post('register', [AuthController::class, 'register_action'])->name('regis
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'login_action'])->name('login.action');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('forgot-password', [AuthController::class, 'forgot_password'])->name('forgot.password');
+Route::post('forgot-password', [AuthController::class, 'forgot_password_action'])->name('forgot.password.action');
+Route::get('confirm-otp/{token}', [AuthController::class, 'confirm_otp'])->name('confirm.otp');
+Route::post('confirm-otp', [AuthController::class, 'confirm_otp_action'])->name('confirm.otp.action');
+Route::get('reset-password/{token}', [AuthController::class, 'reset_password'])->name('reset.password');
+Route::post('reset-password', [AuthController::class, 'reset_password_action'])->name('reset.password.action');
 
 Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
 Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');
@@ -40,9 +47,11 @@ Route::delete('/sheettask/{sheet}', [SheetTaskController::class, 'delete'])->nam
 
 
 Route::get('profile', [UserController::class, 'profile'])->name('profile');
-Route::put('profile/{model}', [SheetTaskController::class, 'updateProfile'])->name('profile.update');
+Route::put('profile/{model}', [UserController::class, 'updateProfile'])->name('profile.update');
 
-Route::get('/user', [UserController::class, 'index'])->name('user');
+Route::get('/user', [UserController::class, 'index'])->name('user.index');
 Route::post('/user', [UserController::class, 'create'])->name('user.create');
-// Route::put('/user/{user?}', [UserController::class, 'update'])->name('user.update');
-Route::delete('/user/{user}', [UserController::class, 'delete'])->name('user.delete');
+Route::put('/user/{model}', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/{model}', [UserController::class, 'delete'])->name('user.delete');
+
+Route::get('/team', [TeamController::class, 'index'])->name('team.index');

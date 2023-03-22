@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Team;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\User;
 
@@ -11,7 +12,7 @@ class UserPolicy
 
     public function before($user, $ability): bool|null
     {
-        if ($user->role === 'admin') {
+        if ($user->role === User::ADMIN) {
             return true;
         }
         return null;
@@ -25,7 +26,11 @@ class UserPolicy
     public function viewAnyUser(User $user)
     {
         //
-        return $user->role === 'admin';
+        $teams = $user->teams()->where('role', Team::LEADER)->get();
+        if ($teams->count() > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -50,7 +55,7 @@ class UserPolicy
     public function createUser(User $user)
     {
         //
-        
+
     }
 
     /**
@@ -76,6 +81,7 @@ class UserPolicy
     public function deleteUser(User $user, User $model)
     {
         //
+        return $user->id === $model->id;
 
     }
 

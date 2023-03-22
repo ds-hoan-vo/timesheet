@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ForgotPassword;
+use App\Models\EmailOtp;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
+use Illuminate\Console\View\Components\Confirm;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Mail;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -62,5 +71,76 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
-    
+
+    public function forgot_password()
+    {
+        return view('auth/forgot_password');
+    }
+
+    public function forgot_password_action(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+        ]);
+        $user = User::where('username', $request->username)->first();
+        if ($user) {
+            $otp = rand(100000, 999999);
+            $token = Password::getRepository()->createNewToken();
+            EmailOtp::where('email', $user->username)->delete();
+            $email_otp = new EmailOtp([
+                'email' => $user->username,
+                'otp' => $otp,
+                'token' => $token,
+                'expired_at' => Carbon::now()->addSecond(60),
+
+            ]);
+            $email_otp->save();
+            Mail::to($user->username)->send(new ForgotPassword($email_otp, $token));
+            return redirect()->route('forgot.password')->with('success', 'Please check your email to reset password');
+        }
+    }
+    public function confirm_otp(Request $request, string $token)
+    {
+        return view('auth/confirm_otp')->with('token', $token);
+    }
+
+    public function confirm_otp_action(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required',
+        ]);
+        $emailOtp = EmailOtp::where('token', $request->token)->first();
+        if ($emailOtp) {
+            $otp = $emailOtp->otp;
+            if ($otp == $request->otp && $emailOtp->expired_at > Carbon::now()) {
+                return redirect()->route('reset.password', $request->token);
+            } elseif ($otp != $request->otp) {
+                return redirect()->route('confirm.otp', $request->token)->with('error', 'Wrong OTP');
+            } else if ($emailOtp->expired_at < Carbon::now()) {
+                return redirect()->route('confirm.otp', $request->token)->with('error', 'OTP expired');
+            }
+        } else {
+            return redirect()->route('confirm.otp', $request->token)->with('error', 'Link expired');
+        }
+    }
+    public function reset_password(Request $request, string $token)
+    {
+        $email = EmailOtp::where('token', $token)->first();
+        $email = $email->email;
+        return view('auth/reset_password')->with('token', $token)->with('email', $email);
+    }
+
+    public function reset_password_action(Request $request)
+    {
+        $request->validate([
+            'password' => 'required',
+            'password_confirm' => 'required|same:password',
+        ]);
+        $emailOtp = EmailOtp::where('token', $request->token)->get()->first();
+        $user = User::where('username', $emailOtp->email)->get()->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return redirect()->route('login')->with('success', 'Reset password success. Please login!');
+    }
+
 }

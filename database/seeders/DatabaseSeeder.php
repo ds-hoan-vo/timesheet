@@ -20,5 +20,20 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+       
+        $users = [
+            ['Vo Ta Hoan', 'hoan-vo@dimage.co.jp', 'Admin', '123456'],
+            ['Uong Hong Minh', 'minh-uong@dimage.co.jp', 'Manager', '123456'],
+            ['Nguyen Kim Bao', 'bao-nguyen@dimage.co.jp', 'User', '123456'],
+            ['Nguyen Duc Tung', 'tung-nguyen@dimage.co.jp', 'User', '123456'],
+        ];
+        foreach ($users as $user) {
+            \App\Models\User::create([
+                'name' => $user[0],
+                'username' => $user[1],
+                'role' => $user[2],
+                'password' => bcrypt($user[3]),
+            ]);
+        }
     }
 }

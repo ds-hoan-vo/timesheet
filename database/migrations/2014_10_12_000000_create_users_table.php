@@ -17,7 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('username')->unique();
-            $table->string('role')->nullable();
+            $table->enum('role', ['Admin', 'Manager', 'User'])->default('User');
             $table->string('password')->nullable();
             $table->string('avatar')->nullable();
             $table->string('description')->nullable();
