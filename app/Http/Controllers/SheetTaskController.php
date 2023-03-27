@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\TimeSheet;
+use App\Repositories\Timesheet\TimeSheetRepositoryInterface ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class SheetTaskController extends Controller
 {
     /**
@@ -13,9 +13,12 @@ class SheetTaskController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    private $timesheetRepository;
+
+    public function __construct(TimeSheetRepositoryInterface  $timesheetRepository)
     {
         $this->middleware('auth');
+        $this->timesheetRepository = $timesheetRepository;
     }
 
     /**
@@ -27,12 +30,8 @@ class SheetTaskController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $sheets = $user->timesheets;
-        // make sheet json has task
-        foreach ($sheets as $sheet) {
-            $tasks = $sheet->tasks;
-            $sheet->tasks = $tasks;
-        }
+        $sheets = $this->timesheetRepository->all();     
+
         return view('sheettask', compact('user', 'sheets'));
     }
 
@@ -41,7 +40,7 @@ class SheetTaskController extends Controller
     {
         $user = Auth::user();
         $this->authorize('createTimeSheet', TimeSheet::class);
-        $sheet = $user->timesheets()->create($request->all());
+        $sheet = $this->timesheetRepository->create($request->all());
 
         return redirect()->route('sheettask');
     }
@@ -49,20 +48,16 @@ class SheetTaskController extends Controller
     public function update(Request $request, TimeSheet $sheet)
     {
         $this->authorize('updateTimeSheet', $sheet);
-        $sheet->tasks->each->delete();
-        if ($request->tasks != null) {
-            foreach ($request->tasks as $item) {
-                $sheet->tasks()->create($item);
-            }
-        }
-        $sheet->fill($request->all())->save();
+        $updatedSheet = $this->timesheetRepository->update($sheet->id, $request->all());
+
         return redirect()->route('sheettask')->with('msg', 'Update success');
     }
 
     public function delete(Request $request, TimeSheet $sheet)
     {
         $this->authorize('deleteTimeSheet', $sheet);
-        $sheet->delete();
+        $this->timesheetRepository->delete($sheet->id);
+        
         return redirect()->route('sheettask')->with('msg', 'Delete success');
     }
 }
