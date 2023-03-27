@@ -6,24 +6,22 @@ use App\Mail\ForgotPassword;
 use App\Models\EmailOtp;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Auth\Passwords\TokenRepositoryInterface;
-use Illuminate\Console\View\Components\Confirm;
 use Illuminate\Http\Request;
-use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Mail;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
+
+    
     public function register()
     {
         return view('auth/register');
     }
 
-    public function register_action(Request $request)
+    public function registerAction(Request $request)
     {
         $request->validate([
             'name' => 'required',
@@ -48,7 +46,7 @@ class AuthController extends Controller
         return view('auth/login');
     }
 
-    public function login_action(Request $request)
+    public function loginAction(Request $request)
     {
         $request->validate([
             'username' => 'required',
@@ -72,12 +70,12 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    public function forgot_password()
+    public function forgotPassword()
     {
         return view('auth/forgot_password');
     }
 
-    public function forgot_password_action(Request $request)
+    public function forgotPasswordAction(Request $request)
     {
         $request->validate([
             'username' => 'required',
@@ -99,12 +97,12 @@ class AuthController extends Controller
             return redirect()->route('forgot.password')->with('success', 'Please check your email to reset password');
         }
     }
-    public function confirm_otp(Request $request, string $token)
+    public function confirmOtp(Request $request, string $token)
     {
         return view('auth/confirm_otp')->with('token', $token);
     }
 
-    public function confirm_otp_action(Request $request)
+    public function confirmOtpAction(Request $request)
     {
         $request->validate([
             'otp' => 'required',
@@ -123,14 +121,14 @@ class AuthController extends Controller
             return redirect()->route('confirm.otp', $request->token)->with('error', 'Link expired');
         }
     }
-    public function reset_password(Request $request, string $token)
+    public function resetPassword(Request $request, string $token)
     {
         $email = EmailOtp::where('token', $token)->first();
         $email = $email->email;
         return view('auth/reset_password')->with('token', $token)->with('email', $email);
     }
 
-    public function reset_password_action(Request $request)
+    public function resetPasswordAction(Request $request)
     {
         $request->validate([
             'password' => 'required',

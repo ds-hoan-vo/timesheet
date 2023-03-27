@@ -24,16 +24,16 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('register', [AuthController::class, 'register'])->name('register');
-Route::post('register', [AuthController::class, 'register_action'])->name('register.action');
+Route::post('register', [AuthController::class, 'registerAction'])->name('register.action');
 Route::get('login', [AuthController::class, 'login'])->name('login');
-Route::post('login', [AuthController::class, 'login_action'])->name('login.action');
+Route::post('login', [AuthController::class, 'loginAction'])->name('login.action');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('forgot-password', [AuthController::class, 'forgot_password'])->name('forgot.password');
-Route::post('forgot-password', [AuthController::class, 'forgot_password_action'])->name('forgot.password.action');
-Route::get('confirm-otp/{token}', [AuthController::class, 'confirm_otp'])->name('confirm.otp');
-Route::post('confirm-otp', [AuthController::class, 'confirm_otp_action'])->name('confirm.otp.action');
-Route::get('reset-password/{token}', [AuthController::class, 'reset_password'])->name('reset.password');
-Route::post('reset-password', [AuthController::class, 'reset_password_action'])->name('reset.password.action');
+Route::get('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot.password');
+Route::post('forgot-password', [AuthController::class, 'forgotPasswordAction'])->name('forgot.password.action');
+Route::get('confirm-otp/{token}', [AuthController::class, 'confirmOtp'])->name('confirm.otp');
+Route::post('confirm-otp', [AuthController::class, 'confirmOtpAction'])->name('confirm.otp.action');
+Route::get('reset-password/{token}', [AuthController::class, 'resetPassword'])->name('reset.password');
+Route::post('reset-password', [AuthController::class, 'resetPasswordAction'])->name('reset.password.action');
 
 Route::get('/timekeeping', [TimekeepingController::class, 'index'])->name('timekeeping');
 Route::get('/timekeeping/checkin', [TimekeepingController::class, 'checkin'])->name('checkin');

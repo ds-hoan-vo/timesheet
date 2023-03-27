@@ -18,7 +18,7 @@ class TeamController extends Controller
 
     public function index()
     {
-
+        
         $this->authorize('viewAnyTeam', Team::class);
 
         $user = Auth::user();
