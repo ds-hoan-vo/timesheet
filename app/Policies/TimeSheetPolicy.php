@@ -68,7 +68,7 @@ class TimeSheetPolicy
     public function createTimeSheet(User $user)
     {
         //
-        return $user->role === 'user';
+        return true;
     }
 
     /**

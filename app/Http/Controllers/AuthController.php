@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\ConfirmOtpRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Mail\ForgotPassword;
 use App\Models\EmailOtp;
 use App\Models\User;
@@ -21,15 +26,8 @@ class AuthController extends Controller
         return view('auth/register');
     }
 
-    public function registerAction(Request $request)
+    public function registerAction(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:users',
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-        ]);
-
         $user = new User([
             'name' => $request->name,
             'username' => $request->username,
@@ -46,12 +44,9 @@ class AuthController extends Controller
         return view('auth/login');
     }
 
-    public function loginAction(Request $request)
+    public function loginAction(LoginRequest $request)
     {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
+
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $request->session()->regenerate();
             return redirect()->intended('timekeeping');
@@ -75,11 +70,8 @@ class AuthController extends Controller
         return view('auth/forgot_password');
     }
 
-    public function forgotPasswordAction(Request $request)
+    public function forgotPasswordAction(ForgotPasswordRequest $request)
     {
-        $request->validate([
-            'username' => 'required',
-        ]);
         $user = User::where('username', $request->username)->first();
         if ($user) {
             $otp = rand(100000, 999999);
@@ -97,16 +89,14 @@ class AuthController extends Controller
             return redirect()->route('forgot.password')->with('success', 'Please check your email to reset password');
         }
     }
+
     public function confirmOtp(Request $request, string $token)
     {
         return view('auth/confirm_otp')->with('token', $token);
     }
 
-    public function confirmOtpAction(Request $request)
+    public function confirmOtpAction(ConfirmOtpRequest $request)
     {
-        $request->validate([
-            'otp' => 'required',
-        ]);
         $emailOtp = EmailOtp::where('token', $request->token)->first();
         if ($emailOtp) {
             $otp = $emailOtp->otp;
@@ -121,6 +111,7 @@ class AuthController extends Controller
             return redirect()->route('confirm.otp', $request->token)->with('error', 'Link expired');
         }
     }
+
     public function resetPassword(Request $request, string $token)
     {
         $email = EmailOtp::where('token', $token)->first();
@@ -128,12 +119,8 @@ class AuthController extends Controller
         return view('auth/reset_password')->with('token', $token)->with('email', $email);
     }
 
-    public function resetPasswordAction(Request $request)
+    public function resetPasswordAction(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-        ]);
         $emailOtp = EmailOtp::where('token', $request->token)->get()->first();
         $user = User::where('username', $emailOtp->email)->get()->first();
         $user->password = Hash::make($request->password);

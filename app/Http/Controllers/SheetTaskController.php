@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TimeSheet\CreateTimeSheetRequest;
+use App\Http\Requests\TimeSheet\UpdateTimeSheetRequest;
 use App\Models\TimeSheet;
 use App\Repositories\Timesheet\TimeSheetRepositoryInterface ;
 use Illuminate\Http\Request;
@@ -36,7 +38,7 @@ class SheetTaskController extends Controller
     }
 
     //modal binding 
-    public function create(Request $request)
+    public function create(CreateTimesheetRequest $request)
     {
         $user = Auth::user();
         $this->authorize('createTimeSheet', TimeSheet::class);
@@ -45,7 +47,7 @@ class SheetTaskController extends Controller
         return redirect()->route('sheettask');
     }
 
-    public function update(Request $request, TimeSheet $sheet)
+    public function update(UpdateTimeSheetRequest $request, TimeSheet $sheet)
     {
         $this->authorize('updateTimeSheet', $sheet);
         $updatedSheet = $this->timesheetRepository->update($sheet->id, $request->all());
